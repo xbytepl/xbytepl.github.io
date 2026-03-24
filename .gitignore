@@ -1,0 +1,7 @@
+# Ignoruj pliki konfiguracyjne z poświadczeniami
+config.php
+.env
+
+# Systemowe
+.DS_Store
+Thumbs.db

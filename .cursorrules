@@ -1,0 +1,1 @@
+Zawsze przechowuj poświadczenia produkcyjne i sekrety (hasła do baz danych, SMTP, klucze API) w odseparowanych plikach np. `config.php` lub `.env`, które nigdy nie są śledzone w systemie kontroli wersji (dodaj je do `.gitignore`). Nigdy nie hardkoduj haseł bezpośrednio w plikach źródłowych (.php, .js, .html).

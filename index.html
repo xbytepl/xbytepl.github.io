@@ -171,22 +171,23 @@
                         <p style="color: var(--text-muted); margin-top: 10px;">Opowiedz nam o swoim projekcie, a my
                             zajmiemy się resztą.</p>
                     </div>
-                    <form class="contact-form">
+                    <form class="contact-form" id="contactForm">
                         <div class="form-group">
                             <label>Imię i Nazwisko</label>
-                            <input type="text" placeholder="Jan Kowalski">
+                            <input type="text" id="name" name="name" placeholder="Jan Kowalski" required>
                         </div>
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" placeholder="jan@przyklad.pl">
+                            <input type="email" id="email" name="email" placeholder="jan@przyklad.pl" required>
                         </div>
                         <div class="form-group">
                             <label>Wiadomość</label>
-                            <textarea placeholder="Opisz swój pomysł..."></textarea>
+                            <textarea id="message" name="message" placeholder="Opisz swój pomysł..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary"
+                        <div id="formStatus" style="display:none; margin-bottom: 15px; padding: 10px; border-radius: 5px; font-weight: 600;"></div>
+                        <button type="submit" class="btn btn-primary" id="submitBtn"
                             style="width: 100%; border: none; font-size: 1.1rem; padding: 16px;">
-                            Wyślij Zapytanie <i data-lucide="arrow-right" style="width: 20px; height: 20px;"></i>
+                            <span id="btnText">Wyślij Zapytanie</span> <i data-lucide="arrow-right" style="width: 20px; height: 20px;"></i>
                         </button>
                     </form>
                 </div>
@@ -250,6 +251,48 @@
             el.style.transform = 'translateY(20px)';
             el.style.transition = 'all 0.8s ease-out';
             observer.observe(el);
+        });
+
+        // Contact Form Handler
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const status = document.getElementById('formStatus');
+            const formData = new FormData(form);
+            
+            btn.disabled = true;
+            btnText.innerText = 'Wysyłanie...';
+            status.style.display = 'none';
+
+            try {
+                const response = await fetch('mailer.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                
+                status.style.display = 'block';
+                if (result.success) {
+                    status.style.backgroundColor = 'rgba(0, 255, 0, 0.1)';
+                    status.style.color = '#00ff00';
+                    status.innerText = 'Wiadomość została pomyślnie wysłana!';
+                    form.reset();
+                } else {
+                    status.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+                    status.style.color = '#ff4757';
+                    status.innerText = 'Błąd: ' + result.message;
+                }
+            } catch (err) {
+                status.style.display = 'block';
+                status.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+                status.style.color = '#ff4757';
+                status.innerText = 'Wystąpił błąd podczas wysyłania wiadomości.';
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = 'Wyślij Zapytanie';
+            }
         });
     </script>
 </body>
